@@ -1,0 +1,55 @@
+cmake_minimum_required(VERSION 3.21.1)
+project(okapi)
+
+find_package(OpenGL REQUIRED)
+include_directories(${OPENGL_INCLUDE_DIRS})
+
+include_directories(dep/include)
+
+link_directories(dep/lib)
+
+include_directories(src)
+
+set(CURRENT_TARGET game)
+set(SOURCES 
+    src/main/main.c
+
+    src/math/mat4.c
+    src/math/quat.c
+    src/math/utility.c
+    src/math/vec3.c
+    src/math/vec4.c
+
+    src/graphics/window/window.c
+    src/graphics/renderer/shader.c
+    src/graphics/renderer/texture.c
+    src/graphics/renderer/framebuffer.c
+
+    src/graphics/renderer/renderer.c
+    
+    src/ecs/ecs.c
+    )
+
+add_executable(
+    ${CURRENT_TARGET}
+    ${SOURCES}
+) 
+
+set_source_files_properties(
+    ${SOURCES}
+    PROPERTIES
+    LANGUAGE C
+)
+
+target_link_libraries(${CURRENT_TARGET}
+    glfw3 
+    glad 
+    ${OPENGL_LIBRARIES}
+    "-framework Cocoa"
+    "-framework AppKit"
+    "-framework CoreData"
+    "-framework Foundation"
+    "-framework IOKit"
+    "-framework Metal"
+)
+target_precompile_headers(${CURRENT_TARGET} PUBLIC "src/pch.h")

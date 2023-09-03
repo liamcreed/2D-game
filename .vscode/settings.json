@@ -1,0 +1,24 @@
+{
+    "files.associations": {
+        "**.mm": "cpp",
+        "simd.h": "c",
+        "matrix.h": "c",
+        "vector.h": "c",
+        "shader.h": "c",
+        "renderer.h": "c",
+        "**.m": "c",
+        "runtime.h": "c",
+        "objc-runtime.h": "c",
+        "ratio": "c",
+        "__node_handle": "c",
+        "texture.h": "c",
+        "__hash_table": "c",
+        "__split_buffer": "c",
+        "array": "c",
+        "bitset": "c",
+        "initializer_list": "c",
+        "unordered_map": "c",
+        "vector": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
+}
