@@ -61,19 +61,23 @@ typedef struct
 
 typedef struct
 {
+    bool visible;
     sub_texture_t sub_texture;
     bool collision;
 }tile_t;
 
-#define MAX_TILEMAP_SIZE 200
-#define MAX_TILE_COUNT 32
+#define MAX_TILEMAP_SIZE 128
+#define MAX_TILE_COUNT 64
+#define MAX_TILEMAP_LAYER_COUNT 2
 
 typedef struct
 {
     u32 width;
     u32 height;
     u32 tile_size;
-    u32 indices[MAX_TILEMAP_SIZE][MAX_TILEMAP_SIZE];
+    u32 layer_count;
+    f32 layer_depths[MAX_TILEMAP_LAYER_COUNT];
+    u32 indices[MAX_TILEMAP_LAYER_COUNT][MAX_TILEMAP_SIZE][MAX_TILEMAP_SIZE];
 }tilemap_t;
 
 typedef struct

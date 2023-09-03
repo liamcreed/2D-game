@@ -18,7 +18,9 @@
         "bitset": "c",
         "initializer_list": "c",
         "unordered_map": "c",
-        "vector": "c"
+        "vector": "c",
+        "scene.h": "c",
+        "chrono": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

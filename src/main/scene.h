@@ -1,5 +1,9 @@
 #pragma once
 
+texture_t texture_atlas = { .filter = false };
+texture_load_from_TGA(&texture_atlas, "./assets/textures/texture_atlas.tga");
+texture_create(&texture_atlas);
+
 #define FRAME_RATE 12
 ecs_scene_t scene = { .pixel_perfect = true };
 ecs_create_scene(&scene);
@@ -89,22 +93,41 @@ scene.tilemap_components[tile_map] = (tilemap_component_t)
 {
     .active = true,
     .map.tile_size = 16,
-    .tiles[0] = {.sub_texture = sub_texture(&texture_atlas, (vec2) { 1,1 }, (vec2) { 16,16 }, false), .collision = false},
-    .tiles[1] = {.sub_texture = sub_texture(&texture_atlas, (vec2) { 1,2 }, (vec2) { 16,16 }, false), .collision = false},
+    .tiles[0] = {},
+    .tiles[1] = {.visible = true, .sub_texture = sub_texture(&texture_atlas, (vec2) { 1,1 }, (vec2) { 16,16 }, false), .collision = false},
+    .tiles[2] = {.visible = true, .sub_texture = sub_texture(&texture_atlas, (vec2) { 1,2 }, (vec2) { 16,16 }, false), .collision = false},
+    .tiles[3] = {.visible = true, .sub_texture = sub_texture(&texture_atlas, (vec2) { 23,4 }, (vec2) { 16,16 }, false), .collision = false},
 
     .map.width = 10,
     .map.height = 10,
-    .map.indices = 
+    .map.layer_count = 2,
+    .map.layer_depths[0] = 0,
+    .map.layer_depths[1] = 5,
+    .map.indices[0] =
     {
-        {0,0,0,0,0,0,0,0,0,0}, 
-        {0,0,0,0,0,0,0,0,0,0}, 
-        {0,0,1,1,1,1,0,0,0,0}, 
-        {0,0,0,0,0,0,0,0,0,0}, 
-        {0,0,0,0,0,0,0,0,0,0}, 
-        {0,0,0,0,0,0,0,0,0,0}, 
-        {0,0,0,0,0,0,0,0,0,0}, 
-        {0,0,0,0,0,0,0,0,0,0}, 
-        {0,0,0,0,0,0,0,0,0,0}, 
+        {1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1},
+    },
+    .map.indices[1] =
+    {
+        {0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0},
+        {0,3,0,0,0,0,3,0,0,0},
+        {0,0,0,3,0,3,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0,0,0},
         {0,0,0,0,0,0,0,0,0,0}
     },
     .texture = &texture_atlas

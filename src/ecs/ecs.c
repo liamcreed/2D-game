@@ -80,13 +80,19 @@ void ecs_update(ecs_scene_t* scene, window_t* window, renderer_t* renderer)
 {
     renderer_start(renderer);
 
-    renderer->view_mat = mat4_translation(vec3_negate(scene->transform_components[scene->active_camera].location));
-    renderer->proj_mat = mat4_ortho_aspect(window->aspect, scene->camera_components[scene->active_camera].ortho_size, scene->camera_components[scene->active_camera].near, scene->camera_components[scene->active_camera].far);
+    {
+        vec3 location = scene->transform_components[scene->active_camera].location;
+        if (scene->pixel_perfect)
+            location = vec3_round(location);
 
-    f32 frustum_bias = scene->camera_components[scene->active_camera].ortho_size / 3.0;
-    vec2 frustum_size = { (scene->camera_components[scene->active_camera].ortho_size * window->aspect) / 2 + frustum_bias, (scene->camera_components[scene->active_camera].ortho_size) / 2 + frustum_bias };
-    scene->camera_components[scene->active_camera].frustum.min = (vec2){ -frustum_size.x + scene->transform_components[scene->active_camera].location.x, -frustum_size.y + scene->transform_components[scene->active_camera].location.y };
-    scene->camera_components[scene->active_camera].frustum.max = (vec2){ frustum_size.x + scene->transform_components[scene->active_camera].location.x, frustum_size.y + scene->transform_components[scene->active_camera].location.y };
+        renderer->view_mat = mat4_translation(vec3_negate(location));
+        renderer->proj_mat = mat4_ortho_aspect(window->aspect, scene->camera_components[scene->active_camera].ortho_size, scene->camera_components[scene->active_camera].near, scene->camera_components[scene->active_camera].far);
+
+        f32 frustum_bias = scene->camera_components[scene->active_camera].ortho_size / 3.0;
+        vec2 frustum_size = { (scene->camera_components[scene->active_camera].ortho_size * window->aspect) / 2 + frustum_bias, (scene->camera_components[scene->active_camera].ortho_size) / 2 + frustum_bias };
+        scene->camera_components[scene->active_camera].frustum.min = (vec2){ -frustum_size.x + location.x, -frustum_size.y + location.y };
+        scene->camera_components[scene->active_camera].frustum.max = (vec2){ frustum_size.x + location.x, frustum_size.y + location.y };
+    }
 
     for (entity_t e = 1; e <= scene->entity_count; e++)
     {
@@ -122,15 +128,9 @@ void ecs_update(ecs_scene_t* scene, window_t* window, renderer_t* renderer)
 
                 if (inside_frustum)
                 {
-                    vec3 location;
+                    vec3 location = trans_c->location;
                     if (scene->pixel_perfect)
-                    {
-                        location.x = round(trans_c->location.x);
-                        location.y = round(trans_c->location.y);
-                        location.z = round(trans_c->location.z);
-                    }
-                    else
-                        location = trans_c->location;
+                        location = vec3_round(location);
 
                     renderer_draw_sub_texture(renderer,
                         sprite_c->texture,
@@ -141,43 +141,56 @@ void ecs_update(ecs_scene_t* scene, window_t* window, renderer_t* renderer)
                 }
             }
             tilemap_component_t* tile_c = &scene->tilemap_components[e];
-            if (tile_c->active && inside_frustum)
+            if (tile_c->active)
             {
-                if (tile_c->map.width > MAX_TILEMAP_SIZE)
+                if (tile_c->map.width * tile_c->map.height > MAX_TILEMAP_SIZE * MAX_TILEMAP_SIZE)
                     log_error("Maximim tilemap size exceeded");
-                for (i32 y = 0; y < tile_c->map.height; y++)
+
+                for (i32 l = 0; l < tile_c->map.layer_count; l++)
                 {
-                    for (i32 x = 0; x < tile_c->map.width; x++)
+                    for (i32 y = 0; y < tile_c->map.height; y++)
                     {
-                        u32 tile_id = tile_c->map.indices[tile_c->map.height - 1 - y ][x];
-                        vec3 tile_location =
+                        for (i32 x = 0; x < tile_c->map.width; x++)
                         {
-                            (x * tile_c->map.tile_size) - (tile_c->map.width * tile_c->map.tile_size) / 2.0 + trans_c->location.x + tile_c->map.tile_size / 2.0,
-                            (y * tile_c->map.tile_size) - (tile_c->map.height * tile_c->map.tile_size) / 2.0 + trans_c->location.y + tile_c->map.tile_size / 2.0,
-                            trans_c->location.z
-                        };
+                            u32 tile_id = tile_c->map.indices[l][tile_c->map.height - 1 - y][x];
+                            if (tile_c->tiles[tile_id].visible)
+                            {
+                                vec3 tile_location =
+                                {
+                                    (x * tile_c->map.tile_size) - (tile_c->map.width * tile_c->map.tile_size) / 2.0 + trans_c->location.x + tile_c->map.tile_size / 2.0,
+                                    (y * tile_c->map.tile_size) - (tile_c->map.height * tile_c->map.tile_size) / 2.0 + trans_c->location.y + tile_c->map.tile_size / 2.0,
+                                    trans_c->location.z + tile_c->map.layer_depths[l]
+                                };
 
-                        bool tile_inside_frustum =
-                            tile_location.x < scene->camera_components[scene->active_camera].frustum.max.x &&
-                            tile_location.x > scene->camera_components[scene->active_camera].frustum.min.x &&
-                            tile_location.y < scene->camera_components[scene->active_camera].frustum.max.y &&
-                            tile_location.y > scene->camera_components[scene->active_camera].frustum.min.y;
 
-                        if (tile_inside_frustum)
-                        {
-                            renderer_draw_sub_texture(renderer,
-                                tile_c->texture,
-                                &tile_c->tiles[tile_id].sub_texture,
-                                tile_location,
-                                (vec2) {
-                                tile_c->map.tile_size, tile_c->map.tile_size
-                            },
-                                (vec4) {
-                                1.0, 1.0, 1.0, 1.0
-                            });
+                                bool tile_inside_frustum =
+                                    tile_location.x < scene->camera_components[scene->active_camera].frustum.max.x &&
+                                    tile_location.x > scene->camera_components[scene->active_camera].frustum.min.x &&
+                                    tile_location.y < scene->camera_components[scene->active_camera].frustum.max.y &&
+                                    tile_location.y > scene->camera_components[scene->active_camera].frustum.min.y;
+
+                                if (tile_inside_frustum)
+                                {
+                                    vec3 location = tile_location;
+                                    if (scene->pixel_perfect)
+                                        location = vec3_round(location);
+
+                                    renderer_draw_sub_texture(renderer,
+                                        tile_c->texture,
+                                        &tile_c->tiles[tile_id].sub_texture,
+                                        location,
+                                        (vec2) {
+                                        tile_c->map.tile_size, tile_c->map.tile_size
+                                    },
+                                        (vec4) {
+                                        1.0, 1.0, 1.0, 1.0
+                                    });
+                                }
+                            }
                         }
                     }
                 }
+
             }
         }
     }

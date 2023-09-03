@@ -53,6 +53,7 @@ vec3 vec3_clamp(vec3 v, vec3 min, vec3 max);
 vec3 vec3_negate(vec3 v);
 vec3 vec3_random_f32(f32 min, f32 max);
 vec3 vec3_reflect(vec3 v, vec3 n);
+vec3 vec3_round(vec3 v);
 void vec3_print(vec3 vector);
 
 vec4 vec4_normalize(vec4 q);

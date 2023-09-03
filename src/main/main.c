@@ -22,10 +22,6 @@ int main()
     };
     renderer_create(&renderer);
 
-    texture_t texture_atlas = { .filter = false };
-    texture_load_from_TGA(&texture_atlas, "./assets/textures/texture_atlas.tga");
-    texture_create(&texture_atlas);
-
 #include "scene.h"
 
     while (!window.closed)
@@ -67,7 +63,7 @@ int main()
             scene.sprite_components[enemy].flip_x = false;
 
         if (key_being_pressed(&window, KEY_SPACE))
-            scene.transform_components[camera].location = vec3_lerp(scene.transform_components[camera].location, scene.transform_components[player].location, window.dt);
+            scene.transform_components[camera].location = vec3_lerp(scene.transform_components[camera].location, scene.transform_components[player].location, window.dt * 10);
         //-------------------------------------------------------------//
 
         ecs_update(&scene, &window, &renderer);

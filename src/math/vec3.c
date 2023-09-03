@@ -103,6 +103,10 @@ vec3 vec3_negate(vec3 v)
 {
     return (vec3) { -v.x, -v.y, -v.z };
 }
+vec3 vec3_round(vec3 v)
+{
+    return (vec3){round(v.x),round(v.y), round(v.z)};
+}
 vec3 vec3_random_f32(f32 min, f32 max)
 {
     return (vec3) { f32_random(min, max), f32_random(min, max), f32_random(min, max) };
