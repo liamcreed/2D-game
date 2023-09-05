@@ -164,6 +164,8 @@ void renderer_end(renderer_t* renderer)
 {
     renderer_flush(renderer);
 
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
     framebuffer_unbind();
     GL(glDisable(GL_DEPTH_TEST));
 
@@ -294,4 +296,46 @@ void renderer_draw_sub_texture(renderer_t* renderer, texture_t* texture, sub_tex
     renderer->vertex_count++;
 
     renderer->index_count += 6;
+}
+
+void renderer_draw_aabb(renderer_t* renderer, vec2 min, vec2 max, vec4 color)
+{    
+    renderer_flush(renderer);
+
+    u32 tex_index = 0;
+
+    vertex_t* vertex = &renderer->vertices[renderer->vertex_count];
+    vertex->location = (vec3){ min.x, min.y, 5 };
+    vertex->uv = (vec2){ 0.0, 0.0 };
+    vertex->color = color;
+    vertex->tex_index = tex_index;
+    renderer->vertex_count++;
+
+    vertex = &renderer->vertices[renderer->vertex_count];
+    vertex->location = (vec3){ max.x, min.y, 5 };
+    vertex->uv = (vec2){ 1.0, 0.0 };
+    vertex->color = color;
+    vertex->tex_index = tex_index;
+    renderer->vertex_count++;
+
+    vertex = &renderer->vertices[renderer->vertex_count];
+    vertex->location = (vec3){ min.x,max.y, 5 };
+    vertex->uv = (vec2){ 0.0, 1.0 };
+    vertex->color = color;
+    vertex->tex_index = tex_index;
+    renderer->vertex_count++;
+
+    vertex = &renderer->vertices[renderer->vertex_count];
+    vertex->location = (vec3){ max.x,max.y, 5 };
+    vertex->uv = (vec2){ 1.0, 1.0 };
+    vertex->color = color;
+    vertex->tex_index = tex_index;
+    renderer->vertex_count++;
+
+    renderer->index_count += 6;
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    renderer_flush(renderer);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 }

@@ -2,37 +2,43 @@
 
 typedef struct
 {
-    f32 x;
-    f32 y;
+    f32 x,y;
 }vec2;
 
 
 typedef struct
 {
-    f32 x;
-    f32 y;
-    f32 z;
+    f32 x,y,z;
 }vec3;
 
 typedef struct
 {
-    f32 x;
-    f32 y;
-    f32 z;
-}vec3f;
-
-typedef struct
-{
-    f32 x;
-    f32 y;
-    f32 z;
-    f32 w;
+    f32 x,y,z,w;
 }vec4;
 
 typedef struct 
 {
     f32 data[4][4];
 } mat4;
+
+
+f32 vec2_dot(vec2 v1, vec2 v2);
+f32 vec2_length_2(vec2 v1);
+f32 vec2_length(vec2 v);
+vec2 vec2_normalize(vec2 v);
+
+vec2 vec2_subtract(vec2 v1, vec2 v2);
+vec2 vec2_add(vec2 v1, vec2 v2);
+vec2 vec2_multiply(vec2 v1, vec2 v2);
+vec2 vec2_multiply_f32(vec2 v, f32 s);
+vec2 vec2_divide(vec2 v1, vec2 v2);
+vec2 vec2_divide_f32(vec2 v1, f32 f);
+vec2 vec2_lerp(vec2 v1, vec2 v2, f32 f);
+vec2 vec2_clamp(vec2 v, vec2 min, vec2 max);
+vec2 vec2_negate(vec2 v);
+vec2 vec2_random_f32(f32 min, f32 max);
+vec2 vec2_round(vec2 v);
+void vec2_print(vec2 vector);
 
 
 f32 vec3_dot(vec3 v1, vec3 v2);

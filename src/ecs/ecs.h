@@ -1,6 +1,6 @@
 #pragma once
 
-#define MAX_ENTITIES 5
+#define MAX_ENTITIES 100
 typedef u32 entity_t;
 
 #include "ecs/components.h"
@@ -12,11 +12,9 @@ typedef struct
     transform_component_t transform_components[MAX_ENTITIES + 1];
     camera_component_t camera_components[MAX_ENTITIES + 1];
     sprite_component_t sprite_components[MAX_ENTITIES + 1];
-    tilemap_component_t tilemap_components[MAX_ENTITIES + 1];
-
+    physics_component_t physics_components[MAX_ENTITIES + 1];
+    
     entity_t active_camera;
-
-    bool pixel_perfect;
 } ecs_scene_t;
 
 void ecs_reset_entity_values(ecs_scene_t* scene, entity_t e);

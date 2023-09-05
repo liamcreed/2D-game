@@ -20,7 +20,13 @@
         "unordered_map": "c",
         "vector": "c",
         "scene.h": "c",
-        "chrono": "c"
+        "chrono": "c",
+        "limits": "c",
+        "algorithm": "c",
+        "__locale": "c",
+        "string": "c",
+        "string_view": "c",
+        "__string": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

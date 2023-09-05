@@ -56,3 +56,4 @@ void renderer_end(renderer_t* renderer);
 
 void renderer_draw_quad(renderer_t* renderer, texture_t* texture, vec3 location, vec2 size, vec4 color);
 void renderer_draw_sub_texture(renderer_t* renderer, texture_t* texture, sub_texture_t* sub_texture, vec3 location, vec2 size, vec4 color);
+void renderer_draw_aabb(renderer_t* renderer, vec2 min, vec2 max, vec4 color);

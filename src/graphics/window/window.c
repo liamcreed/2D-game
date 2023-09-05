@@ -53,6 +53,8 @@ void window_create(window_t* window)
     {
         glfwSetInputMode(window->glfw, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
+
+    srand(time(NULL));
 }
 
 void window_update(window_t* window)

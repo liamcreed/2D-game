@@ -17,6 +17,7 @@ set(SOURCES
     src/math/mat4.c
     src/math/quat.c
     src/math/utility.c
+    src/math/vec2.c
     src/math/vec3.c
     src/math/vec4.c
 

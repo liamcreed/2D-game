@@ -1,9 +1,14 @@
 https://github.com/mackron/miniaudio
 
 collision detection
+Pixel perfect collision based on alpha channel of a PNG image
 
 ecs scene serialization
 
 animation looping andd ssingle play
 
 ui
+
+texture = texturefromfile;
+
+children entities
