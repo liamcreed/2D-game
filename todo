@@ -12,3 +12,7 @@ ui
 texture = texturefromfile;
 
 children entities
+
+delete children
+
+dit kan blijkbaar: scene.script_components[player].context = &(player_script_context_t){ .hitbox = player_hitbox };

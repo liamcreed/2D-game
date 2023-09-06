@@ -3,7 +3,6 @@
 typedef struct
 {
     u32 id;
-    bool filter, sRGB;
 
     u32 width;
     u32 height;
@@ -25,11 +24,11 @@ typedef struct
     vec2 uv[4];
 }sub_texture_t;
 
-void texture_load_from_TGA(texture_t *texture, const char *path);
+texture_t texture_load_from_TGA(const char *path);
 
 void texture_export_to_bin(texture_t* texture, const char* path);
 void texture_TGA_to_bin(const char* TGA, const char* bin);
-void texture_load_from_bin(texture_t *texture, const char *path);
+texture_t texture_load_from_bin(const char *path);
 void texture_create(texture_t *texture);
 void texture_bind(texture_t *texture, u32 index);
 void texture_unbind(u32 index);

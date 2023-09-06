@@ -29,6 +29,7 @@ set(SOURCES
     src/graphics/renderer/renderer.c
     
     src/ecs/ecs.c
+    src/ecs/physics.c
     )
 
 add_executable(

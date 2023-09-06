@@ -18,8 +18,10 @@ typedef struct
 }tga_header_t;
 #pragma pack(pop)
 
-void texture_load_from_TGA(texture_t* texture, const char* path)
+texture_t texture_load_from_TGA(const char* path)
 {
+    texture_t result = {};
+    
     FILE* file;
     file = fopen(path, "rb");
     if (file == NULL)
@@ -28,60 +30,65 @@ void texture_load_from_TGA(texture_t* texture, const char* path)
     tga_header_t tga_header = {};
     fread(&tga_header, sizeof(tga_header_t), 1, file);
 
-    texture->width = tga_header.width;
-    texture->height = tga_header.height;
+    result.width = tga_header.width;
+    result.height = tga_header.height;
 
-    texture->channel_count = tga_header.bits_per_pixel / 8;
+    result.channel_count = tga_header.bits_per_pixel / 8;
 
-    u32 length = texture->width * texture->height * texture->channel_count;
+    u32 length = result.width * result.height * result.channel_count;
     u8* image_data = malloc(length);
-    texture->data = malloc(length);
+    result.data = malloc(length);
     fread(image_data, length, 1, file);
     if (image_data == NULL)
         printf(LOG_ERROR"[Texture]: failed to get data from %s\n", path);
 
-    for (int y = 0; y < texture->height; y++)
+    for (int y = 0; y < result.height; y++)
     {
-        for (int x = 0; x < texture->width; x++)
+        for (int x = 0; x < result.width; x++)
         {
-            int original_index = (y * texture->width + x) * texture->channel_count;
-            int flipped_index = ((texture->height - y - 1) * texture->width + x) * texture->channel_count;
+            int original_index = (y * result.width + x) * result.channel_count;
+            int flipped_index = ((result.height - y - 1) * result.width + x) * result.channel_count;
 
-            texture->data[original_index + 0] = image_data[flipped_index + 2];
-            texture->data[original_index + 1] = image_data[flipped_index + 1];
-            texture->data[original_index + 2] = image_data[flipped_index + 0];
-            if (texture->channel_count == 4)
-                texture->data[original_index + 3] = image_data[flipped_index + 3];
+            result.data[original_index + 0] = image_data[flipped_index + 2];
+            result.data[original_index + 1] = image_data[flipped_index + 1];
+            result.data[original_index + 2] = image_data[flipped_index + 0];
+            if (result.channel_count == 4)
+                result.data[original_index + 3] = image_data[flipped_index + 3];
         }
     }
 
     free(image_data);
 
     fclose(file);
+    texture_create(&result);
+    return result;
 }
 
-void texture_load_from_bin(texture_t* texture, const char* path)
+texture_t texture_load_from_bin(const char* path)
 {
+    texture_t result = {};
+
     FILE* file;
     file = fopen(path, "rb");
     if (file == NULL)
     {
         printf(LOG_ERROR "[texture]: %s does not exist!\n", path);
     }
-    fread(&texture->channel_count, sizeof(u32), 1, file);
-    fread(&texture->width, sizeof(u32), 1, file);
-    fread(&texture->height, sizeof(u32), 1, file);
-    texture->data = malloc(texture->width * texture->height * texture->channel_count);
-    fread(texture->data, texture->width * texture->height * texture->channel_count, 1, file);
+    fread(&result.channel_count, sizeof(u32), 1, file);
+    fread(&result.width, sizeof(u32), 1, file);
+    fread(&result.height, sizeof(u32), 1, file);
+    result.data = malloc(result.width * result.height * result.channel_count);
+    fread(result.data, result.width * result.height * result.channel_count, 1, file);
 
     fclose(file);
+    texture_create(&result);
+    return result;
 }
 
 
 void texture_TGA_to_bin(const char* TGA, const char* bin)
 {
-    texture_t texture = {};
-    texture_load_from_TGA(&texture, TGA);
+    texture_t texture = texture_load_from_TGA(TGA);
     texture_export_to_bin(&texture, bin);
 }
 
@@ -111,33 +118,18 @@ void texture_create(texture_t* texture)
     GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
     GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
 
-    if (texture->filter)
-    {
-        GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-        GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-    }
-    else
-    {
-        GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-        GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    }
+    GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+    GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 
-    if (texture->channel_count == 4 && texture->sRGB == true)
-    {
-        GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->data));
-    }
-    else if (texture->channel_count == 3 && texture->sRGB == true)
-    {
-        GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB, texture->width, texture->height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture->data));
-    }
-    else if (texture->channel_count == 4 && texture->sRGB == false)
+    if (texture->channel_count == 4)
     {
         GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->data));
     }
-    else if (texture->channel_count == 3 && texture->sRGB == false)
+    else if (texture->channel_count == 3)
     {
-        GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture->width, texture->height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture->data));
+        GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture->data));
     }
+
 
     GL(glBindTexture(GL_TEXTURE_2D, 0));
     GL(glGenerateMipmap(GL_TEXTURE_2D));

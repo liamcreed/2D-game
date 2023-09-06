@@ -152,6 +152,12 @@ void renderer_flush(renderer_t* renderer)
 
     shader_bind(&renderer->quad_shader);
 
+    if (renderer->wireframe)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    else
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+
     GL(glBindVertexArray(renderer->quad_vertex_array.vao));
     GL(glDrawElements(GL_TRIANGLES, renderer->index_count, GL_UNSIGNED_INT, 0));
 
@@ -299,8 +305,9 @@ void renderer_draw_sub_texture(renderer_t* renderer, texture_t* texture, sub_tex
 }
 
 void renderer_draw_aabb(renderer_t* renderer, vec2 min, vec2 max, vec4 color)
-{    
-    renderer_flush(renderer);
+{
+    if (renderer->vertex_count > MAX_QUAD_COUNT * 4 - 1 || renderer->texture_count > MAX_TEXTURE_COUNT - 1)
+        renderer_flush(renderer);
 
     u32 tex_index = 0;
 
@@ -333,9 +340,4 @@ void renderer_draw_aabb(renderer_t* renderer, vec2 min, vec2 max, vec4 color)
     renderer->vertex_count++;
 
     renderer->index_count += 6;
-
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    renderer_flush(renderer);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
 }

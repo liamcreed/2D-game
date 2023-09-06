@@ -45,6 +45,7 @@ typedef struct
     vertex_array_t frame_buffer_va;
     shader_t post_process_shader;
 
+    bool wireframe;
 }renderer_t;
 
 void renderer_create(renderer_t* renderer);
