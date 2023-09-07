@@ -18,7 +18,7 @@ typedef struct
     u32 tile_size;
     u32 layer_count;
     f32 layer_depths[MAX_TILEMAP_LAYER_COUNT];
-    u32 indices[MAX_TILEMAP_LAYER_COUNT][MAX_TILEMAP_SIZE][MAX_TILEMAP_SIZE];
+    i32 indices[MAX_TILEMAP_LAYER_COUNT][MAX_TILEMAP_SIZE][MAX_TILEMAP_SIZE];
 }tilemap_t;
 
 typedef struct

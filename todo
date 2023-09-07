@@ -1,7 +1,34 @@
 https://github.com/mackron/miniaudio
 
+
+ecs_system
+{
+        scenes
+        {
+                entities
+        };
+       transform_componnets[100000];
+
+}
+
+scene add entity(ecs_system, scene, player)
+{
+        scene.entitites[i] = player;
+}
+
+
+entities not a pointer inside scene
+
+
+
+
 collision detection
 Pixel perfect collision based on alpha channel of a PNG image
+ 
+TODO: KAN BETER: 
+if (e->physics_component.collided_with[context->player_hitbox] && key_being_pressed(w, KEY_J))
+        scene->data_components[e].active = false;  */
+
 
 ecs scene serialization
 

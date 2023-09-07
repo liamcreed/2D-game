@@ -13,6 +13,8 @@ include_directories(src)
 set(CURRENT_TARGET game)
 set(SOURCES 
     src/main/main.c
+    src/main/scripts/player.c
+    src/main/scripts/enemy.c
 
     src/math/mat4.c
     src/math/quat.c

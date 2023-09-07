@@ -1,12 +1,15 @@
 #pragma once
 
+typedef struct ecs_scene_t ecs_scene_t;
+typedef struct ecs_t ecs_t;
+
 typedef struct
 {
     bool active;
     bool unused;
     char name[32];
     char type[32];
-    i32 parent;
+    entity_t parent;
 } data_component_t;
 
 typedef struct
@@ -70,22 +73,26 @@ typedef struct
     bool active;
     bool fixed;
     vec2 velocity;
-    
-    vec2 size;
+
     aabb_t aabb;
 
-    bool collided_with[MAX_ENTITIES+1];
+    bool collided_with[MAX_ENTITY_COUNT+1];
     bool collided;
     bool hit_collider;
 }physics_component_t;
 
-typedef struct ecs_scene_t ecs_scene_t;
 
-typedef struct 
+typedef struct
 {
     void (*init)(ecs_scene_t* scene, entity_t e);
     void (*update)(ecs_scene_t* scene, entity_t e, window_t* w, renderer_t* r, void* c);
     void* context;
+}ecs_script_t;
+
+typedef struct 
+{
+    bool active;
+    ecs_script_t script;
 }script_component_t;
 
 

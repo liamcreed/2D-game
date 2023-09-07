@@ -1,13 +1,8 @@
-#pragma once
-
-typedef struct 
-{
-    entity_t hitbox;
-}player_script_context_t;
+#include "engine.h"
 
 void player_update(ecs_scene_t* scene, entity_t e, window_t* w, renderer_t* r, void* c)
 {
-    player_script_context_t* context = (player_script_context_t*)c;
+    entity_t hitbox = ecs_get_entity(scene, "player_hitbox");
 
     f32 speed = 96;
     if (!key_being_pressed(w, KEY_LEFT_SHIFT))
@@ -28,14 +23,13 @@ void player_update(ecs_scene_t* scene, entity_t e, window_t* w, renderer_t* r, v
     if (movement.x > 0)
         scene->sprite_components[e].flip_x = false;
 
-
     if (movement.x > 0)
     {
-        scene->transform_components[context->hitbox].location.x = 18;
+        scene->transform_components[hitbox].location.x = 18;
     }
     if (movement.x < 0)
     {
-        scene->transform_components[context->hitbox].location.x = -18;
+        scene->transform_components[hitbox].location.x = -18;
     }
 
     if (movement.x || movement.y)
@@ -48,5 +42,7 @@ void player_update(ecs_scene_t* scene, entity_t e, window_t* w, renderer_t* r, v
         movement.x *= cos(0.79);
         movement.y *= cos(0.79);
     }
-    scene->physics_components[e].velocity = (vec2){ movement.x * speed, movement.y * speed };
+    scene->physics_components[e].velocity = (vec2){ movement.x * speed, movement.y * speed}; 
 }
+
+ecs_script_t player_script = {.update = player_update};

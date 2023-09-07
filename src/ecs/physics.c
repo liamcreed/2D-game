@@ -5,15 +5,15 @@ void ecs_update_physics(ecs_scene_t* scene, window_t* window, renderer_t* render
     if (debug)
         renderer_flush(renderer);
 
-    bool collision_checked_entities[MAX_ENTITIES + 1][MAX_ENTITIES + 1] = { {false},{false} };
-    for (entity_t e = 1; e <= scene->entity_count; e++)
+    bool collision_checked_entities[MAX_ENTITY_COUNT + 1][MAX_ENTITY_COUNT + 1] = { {false},{false} };
+    for (entity_t e = 0; e < scene->entity_count; e++)
     {
         if (scene->data_components[e].active)
         {
             transform_component_t* trans_c = &scene->transform_components[e];
             transform_component_t trans_c_parent;
             entity_t parent = scene->data_components[e].parent;
-            if (parent != -1 && parent > 0)
+            if (parent != -1)
             {
                 trans_c_parent = (transform_component_t)
                 {
@@ -36,7 +36,7 @@ void ecs_update_physics(ecs_scene_t* scene, window_t* window, renderer_t* render
 
             if (phys_c->active && inside_frustum)
             {
-                for (entity_t f = 1; f <= scene->entity_count; f++)
+                for (entity_t f = 0; f < scene->entity_count; f++)
                 {
                     physics_component_t* phys_c_f = &scene->physics_components[f];
                     if (f != e && phys_c_f->active && !collision_checked_entities[e][f] && !collision_checked_entities[f][e] && scene->data_components[f].active)
@@ -143,11 +143,8 @@ void ecs_update_physics(ecs_scene_t* scene, window_t* window, renderer_t* render
                                 phys_c_f->collided_with[e] = false;
                             }
 
-
                             collision_checked_entities[e][f] = true;
                             collision_checked_entities[f][e] = true;
-
-
                         }
                     }
                 }
@@ -167,4 +164,4 @@ void ecs_update_physics(ecs_scene_t* scene, window_t* window, renderer_t* render
         renderer->wireframe = false;
     }
 
-}
+} 
