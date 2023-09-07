@@ -54,8 +54,8 @@ ecs.physics_components[player] = (physics_component_t)
     .fixed = false,
     .aabb =
     {
-        .min = {-1,-1},
-        .max = {1,.2},
+        .min = {-0.8,-1},
+        .max = {0.8,.2},
         .size = {16,32},
     }
 };
