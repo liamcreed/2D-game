@@ -113,25 +113,11 @@ void ecs_update_physics(ecs_scene_t* scene, window_t* window, renderer_t* render
 
                                     if (normal_velocity <= 0)
                                     {
-                                        if (phys_c_f->fixed)
-                                        {
-                                            collision_normal = vec2_round(collision_normal);
-                                            if (phys_c->velocity.x > 0 && collision_normal.x < 0)
-                                                phys_c->velocity.x = 0;
-                                            else if (phys_c->velocity.x < 0 && collision_normal.x > 0)
-                                                phys_c->velocity.x = 0;
-                                            else if (phys_c->velocity.y > 0 && collision_normal.y < 0)
-                                                phys_c->velocity.y = 0;
-                                            else if (phys_c->velocity.y < 0 && collision_normal.y > 0)
-                                                phys_c->velocity.y = 0;
-                                        }
-                                        else
-                                        {
-                                            //sphys_c_f->velocity = phys_c->velocity;
-                                            vec2 impulse = vec2_multiply_f32(collision_normal, -normal_velocity);
-                                            phys_c_f->velocity = phys_c->velocity;
-                                            phys_c->velocity = impulse;
-                                        }
+                                        //sphys_c_f->velocity = phys_c->velocity;
+                                        vec2 impulse = vec2_multiply_f32(collision_normal, -normal_velocity);
+                                        phys_c_f->velocity = phys_c->velocity;
+                                        phys_c->velocity = impulse;
+
                                     }
                                 }
                             }
@@ -164,4 +150,4 @@ void ecs_update_physics(ecs_scene_t* scene, window_t* window, renderer_t* render
         renderer->wireframe = false;
     }
 
-} 
+}

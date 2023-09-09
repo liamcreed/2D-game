@@ -86,19 +86,6 @@ ecs.script_components[player] = (script_component_t)
     .script = player_script,
 };
 
-entity_t background = ecs_create_entity(&ecs, "background");
-ecs.sprite_components[background] = (sprite_component_t)
-{
-    .active = true,
-    .texture = &background_texture,
-    .color = {1,1,1,1},
-    .size = {16 * 30,16 * 20}
-};
-ecs.transform_components[background] = (transform_component_t)
-{
-   .size = {16 * 30,16 * 20}
-};
-
 //-----------------------------------//
 
 entity_t enemy = ecs_create_entity(&ecs, "enemy");

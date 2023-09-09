@@ -140,7 +140,7 @@ void ecs_update(ecs_scene_t* scene, window_t* window, renderer_t* renderer)
         }
     }
 
-    ecs_update_physics(scene, window, renderer, true);
+    ecs_update_physics(scene, window, renderer, false);
 
     for (entity_t e = 0; e < scene->entity_count; e++)
     {

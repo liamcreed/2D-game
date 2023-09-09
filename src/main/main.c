@@ -4,8 +4,8 @@ int main()
 {
     window_t window =
     {
-        .width = 800,
-        .height = 600,
+        .width = 1280,
+        .height = 720,
         .resizable = false,
         .title = "hello",
         .cursor = true,
@@ -30,18 +30,29 @@ int main()
 #include "scripts/scripts.h"
 #include "entities.h"
 
+#define GRID_SIZE 480
 
-    entity_t wall = ecs_create_entity(&ecs, "wall");
-    ecs.physics_components[wall] = (physics_component_t)
+    texture_t grid_texture =
+    {
+        .channel_count = 4,
+        .data = malloc(GRID_SIZE * GRID_SIZE * 4),
+        .width = GRID_SIZE,
+        .height = GRID_SIZE,
+    };
+    memset(grid_texture.data, 255, GRID_SIZE * GRID_SIZE * 4);
+
+    texture_create(&grid_texture);
+
+    entity_t background = ecs_create_entity(&ecs, "background");
+    ecs.sprite_components[background] = (sprite_component_t)
     {
         .active = true,
-        .aabb = 
-        {
-            .min = {-1,-1},
-            .max = {1,1},
-            .size = {16,16}
-        },
-        .fixed = true,
+        .texture = &grid_texture,
+        .color = {1,1,1,1},
+    };
+    ecs.transform_components[background] = (transform_component_t)
+    {
+       .size = {480, 480}
     };
 
     ecs_scene_t scene1 = ecs_create_scene(&ecs, "scene0");
@@ -50,29 +61,36 @@ int main()
     ecs_scene_add_entity(&scene1, player_hitbox, "player_hitbox");
     ecs_set_parent(&scene1, "player_hitbox", "player");
 
-    for (i32 i = 0; i < 3; i++)
-    {
-        ecs_scene_add_entity(&scene1, enemy, "enemy");  
-    }
-    
+    ecs_scene_add_entity(&scene1, enemy, "enemy");
+
     ecs_scene_add_entity(&scene1, background, "background");
 
-    for (i32 i = 0; i < 5; i++)
+    typedef struct
     {
-        char name[16];
-        snprintf(name, 16, "wall %i\0", i);
-        printf("%s\n", name);
-        ecs_scene_add_entity(&scene1, wall, name);
-        entity_t wall_entity = ecs_get_entity(&scene1, name);
-      /*   
-        ecs.transform_components[wall_entity].location.y = 8 * 16;
-        ecs.transform_components[wall_entity].location.x = 8;
-         */
-    }
-    
+        vec4 color;
+        i32 id;
+    }particle_t;
+    particle_t (*particles)[GRID_SIZE] = malloc(GRID_SIZE * GRID_SIZE * sizeof(particle_t));
+
     while (!window.closed)
     {
         window_update(&window);
+
+        for (i32 y = 0; y < GRID_SIZE; y++)
+        {
+            for (i32 x = 0; x < GRID_SIZE; x++)
+            {
+                particles[x][y].color = (vec4){(f32)rand()/RAND_MAX,0,0,1};
+
+                i32 c = (x * 4) + (y * GRID_SIZE * 4);
+                grid_texture.data[c + 0] = particles[x][y].color.x *  255;
+                grid_texture.data[c + 1] = particles[x][y].color.y * 255;
+                grid_texture.data[c + 2] = particles[x][y].color.z * 255;
+                grid_texture.data[c + 3] = 255;
+            }
+        }
+        texture_update_data(&grid_texture);
+
         renderer_start(&renderer);
         ecs_update(&scene1, &window, &renderer);
         renderer_end(&renderer);
